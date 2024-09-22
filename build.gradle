@@ -46,18 +46,6 @@ if (project.use_access_transformer.toBoolean()) {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs = []
-        }
-        withConvention(ScalaSourceSet::class) {
-            scala {
-                srcDirs = ["src/main/java"]
-            }
-        }
-    }
-}
 
 repositories {
     maven {

@@ -13,6 +13,8 @@ version = project.mod_version
 group = project.maven_group
 archivesBaseName = project.archives_base_name
 
+compileScala.scalaCompileOptions.additionalParameters = ["-Xexperimental"]
+scaladoc.scalaDocOptions.additionalParameters = ["-Xexperimental"]
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(8))

@@ -1,0 +1,79 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'eclipse'
+    id 'com.gtnewhorizons.retrofuturagradle' version '1.4.1'
+    id 'scala'
+    id "com.github.johnrengelman.shadow" version "2.0.4"
+}
+
+
+version = "1.0"
+group = "com.yourname.modid"
+archivesBaseName = "modid"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+        // Azul covers the most platforms for Java 8 toolchains, crucially including MacOS arm64
+        vendor.set(org.gradle.jvm.toolchain.JvmVendorSpec.AZUL)
+    }
+    // Generate sources and javadocs jars when building and publishing
+    withSourcesJar()
+    // withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+
+minecraft {
+    mcVersion.set('1.12.2')
+
+    // MCP Mappings
+    mcpMappingChannel = 'snapshot'
+    mcpMappingVersion = '20171003-1.12'
+}
+
+if (project.use_access_transformer.toBoolean()) {
+    for (File at : sourceSets.getByName("main").resources.files) {
+        if (at.name.toLowerCase().endsWith("_at.cfg")) {
+            tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(at)
+            tasks.srgifyBinpatchedJar.accessTransformerFiles.from(at)
+        }
+    }
+}
+
+repositories {
+    maven {
+        // RetroFuturaGradle
+        name 'GTNH Maven'
+        url 'https://nexus.gtnewhorizons.com/repository/public/'
+        allowInsecureProtocol = true
+        mavenContent {
+            includeGroup 'com.gtnewhorizons'
+            includeGroup 'com.gtnewhorizons.retrofuturagradle'
+        }
+    }
+
+    mavenCentral() // Provide Scala
+    mavenLocal() // Must be last for caching to work
+}
+
+dependencies {
+    implementation "org.scala-lang:scala-library:2.11.4"
+
+    // impl shaped Mirror here, may cause error
+    implementation fileTree(dir:project.implementation_folder.toString(),includes:['*jar'])
+
+}
+
+shadowJar.apply {
+    classifier = "shaded"
+    configurations = listOf()
+
+    relocate("shapeless", "net.katsstuff.teamnightclipse.mirror.shade.shapeless")
+}
+
+tasks["build"].dependsOn(shadowJar)

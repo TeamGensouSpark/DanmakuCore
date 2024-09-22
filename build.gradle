@@ -4,7 +4,7 @@ plugins {
     id 'eclipse'
     id 'com.gtnewhorizons.retrofuturagradle' version '1.4.1'
     id 'scala'
-    id "com.github.johnrengelman.shadow" version "2.0.4"
+    id "com.gradleup.shadow" version "8.3.1"
 }
 
 
@@ -69,11 +69,8 @@ dependencies {
 
 }
 
-shadowJar.apply {
-    classifier = "shaded"
-    configurations = listOf()
-
-    relocate("shapeless", "net.katsstuff.teamnightclipse.mirror.shade.shapeless")
+tasks.named('shadowJar', com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    relocate 'shapeless', 'net.katsstuff.teamnightclipse.mirror.shade.shapeless'
 }
 
 tasks["build"].dependsOn(shadowJar)

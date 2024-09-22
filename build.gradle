@@ -1,9 +1,10 @@
 plugins {
+    id 'scala'
+    // Katrix: We apply these to get pretty build script
     id 'java'
     id 'java-library'
     id 'eclipse'
     id 'com.gtnewhorizons.retrofuturagradle' version '1.4.1'
-    id 'scala'
     id "com.github.johnrengelman.shadow" version "8.1.1"
 }
 
@@ -41,6 +42,17 @@ if (project.use_access_transformer.toBoolean()) {
         if (at.name.toLowerCase().endsWith("_at.cfg")) {
             tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(at)
             tasks.srgifyBinpatchedJar.accessTransformerFiles.from(at)
+        }
+    }
+}
+
+sourceSets["main"].apply {
+    java {
+        setSrcDirs([])
+    }
+    withConvention(ScalaSourceSet::class) {
+        scala {
+            srcDir("src/main/java")
         }
     }
 }

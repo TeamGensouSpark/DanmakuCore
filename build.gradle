@@ -46,13 +46,15 @@ if (project.use_access_transformer.toBoolean()) {
     }
 }
 
-sourceSets["main"].apply {
-    java {
-        setSrcDirs([])
-    }
-    withConvention(ScalaSourceSet::class) {
-        scala {
-            srcDir("src/main/java")
+sourceSets {
+    main {
+        java {
+            srcDirs = []
+        }
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                srcDirs = ["src/main/java"]
+            }
         }
     }
 }
